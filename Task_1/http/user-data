@@ -1,0 +1,67 @@
+#cloud-config
+
+autoinstall:
+  version: 1
+  # early-commands:
+  #Команды которые выполняются перед инициализацией устройств
+  #В некоторых случаях надо прикрыть ssh чтоб packer не подключился раньше времени
+  #Такое возможно, если мы создаем юзера как показано в закомментирированном блоке users
+  #Варианты как блокнуть
+    # - iptables -A INPUT -p tcp --dport 22 -j DROP
+    # - systemctl stop ssh
+  
+  #по сути единственный необходимый блок. Все остальное в случае отсутствия будет установленно в дефолтные значения
+  identity:
+    username: vagrant
+    #передать хеш openssl passwd -6 -salt 4096 vagrant
+    password: $6$4096$31EjKf3JTJuu.ABbk6AozmCix04PsPwQx2rPC4rhJjjd3LZPVSDz2o4SKqhR1eZIkkxwIgJ.5AvKtLJkSTzEh0
+    hostname: ubuntu-otus
+
+  #Параметры которые задаются на шагах установки. Большинство в дефолтных значениях (можно было вообще не указывать)
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+    variant: ''
+  refresh-installer:
+    update: no
+  source:
+    id: ubuntu-server-minimal
+    # id: ubuntu-server
+    search_drivers: false
+  network:
+    network:
+      version: 2
+      ethernets:
+        enp0s3:
+          dhcp4: true
+  drivers:
+    install: false
+  timezone: Europe/Moscow
+  storage:
+    layout:
+      name: lvm
+      match:
+        size: largest
+  updates: security
+  ssh:
+    allow-pw: true
+    install-server: yes
+#Пакеты, которые необходимо установить
+  packages:
+    - vim
+    # - linux-generic-hwe-22.04 #  <-------  По сути это и есть обновление ядра В дефолте kernel 5.4
+  #Комманды выполняемые в конце установки. Тут просто исключим запрос пароля в sudo для юзера
+  late-commands:
+      - "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /target/etc/sudoers.d/vagrant"
+      - "chmod 440 /target/etc/sudoers.d/vagrant"
+
+#При необходимости можно наплодить сразу юзеров
+# users:
+#   - default
+#   - name: vagrant
+#     passwd: $6$4096$31EjKf3JTJuu.ABbk6AozmCix04PsPwQx2rPC4rhJjjd3LZPVSDz2o4SKqhR1eZIkkxwIgJ.5AvKtLJkSTzEh0
+#     sudo: ALL=(ALL) NOPASSWD:ALL
+#     groups: sudo
+#     shell: /bin/bash
+#     lock_passwd: false
+#     ssh_pwauth: True
