@@ -4,6 +4,7 @@ sudo apt update -y
 sudo apt install mainline -y
 sudo mainline download 6.6.1
 sudo mainline install 6.6.1
+sudo apt --fix-broken install -y
 
 #Вариант 2
 # sudo mkdir update_kernel && cd update_kernel

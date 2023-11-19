@@ -1,0 +1,65 @@
+---
+- name: NGINX-install
+  hosts: web
+  become: True
+  vars:
+    nginx_listen_port: 8080
+
+  tasks:
+  - name: NGINX-save_key_nginx_repo
+    shell: curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+    tags:
+      - add_nginx_repo
+
+  - name: NGINX-add_nginx_stable_repo
+    shell: echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+    tags:
+      - add_nginx_repo
+
+  - name: NGINX-fixed_apt_preferences
+    shell: 'echo "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n"  | sudo tee /etc/apt/preferences.d/99nginx'
+    tags:
+      - add_nginx_repo
+
+# фиксим поломанные зависимости, которые я упустил в предыдущем задании
+  - name: NGINX-fix_dependencies
+    shell: apt --fix-broken install -y
+    tags:
+      - fix-broken
+
+  - name: NGINX-install_nginx
+    apt:
+      update_cache: True
+      # Модуль apt не устарнил проблемы с поломанными зависимостями 
+      # state: fixed
+      name: nginx
+    tags:
+      - nginx-package
+    notify:
+      - start_nginx
+     
+  - name: NGINX-config
+    template:
+      src: templates/nginx.conf.j2
+      dest: /etc/nginx/nginx.conf
+    tags:
+      - nginx-configuration
+    notify:
+      - reload_nginx
+  
+  handlers:
+    - name: start_nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: True
+
+    - name: restart_nginx
+      systemd:
+        name: nginx
+        state: restarted
+        
+    - name: reload_nginx
+      systemd:
+        name: nginx
+        state: reloaded
