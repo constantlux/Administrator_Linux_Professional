@@ -303,6 +303,49 @@ unused devices: <none>
 ### Создать GPT-таблицу и 5 разделов поверх массива, смонтировать их в системе.
 [В скрипте](scripts/gpt5)
 
+```
+vagrant@nginx:~$ lsblk 
+NAME                      MAJ:MIN RM  SIZE RO TYPE   MOUNTPOINTS
+sda                         8:0    0  9.8G  0 disk   
+├─sda1                      8:1    0    1M  0 part   
+├─sda2                      8:2    0  1.8G  0 part   /boot
+└─sda3                      8:3    0    8G  0 part   
+  └─ubuntu--vg-ubuntu--lv 252:0    0    8G  0 lvm    /
+sdb                         8:16   0  100M  0 disk   
+└─md127                     9:127  0  196M  0 raid10 
+  ├─md127p1               259:0    0   10M  0 part   
+  ├─md127p2               259:3    0   20M  0 part   
+  ├─md127p3               259:4    0   30M  0 part   
+  ├─md127p4               259:7    0   40M  0 part   
+  └─md127p5               259:8    0   95M  0 part   
+sdc                         8:32   0  250M  0 disk   
+├─sdc1                      8:33   0  100M  0 part   
+│ └─md127                   9:127  0  196M  0 raid10 
+│   ├─md127p1             259:0    0   10M  0 part   
+│   ├─md127p2             259:3    0   20M  0 part   
+│   ├─md127p3             259:4    0   30M  0 part   
+│   ├─md127p4             259:7    0   40M  0 part   
+│   └─md127p5             259:8    0   95M  0 part   
+└─sdc2                      8:34   0  149M  0 part   
+sdd                         8:48   0  100M  0 disk   
+└─md127                     9:127  0  196M  0 raid10 
+  ├─md127p1               259:0    0   10M  0 part   
+  ├─md127p2               259:3    0   20M  0 part   
+  ├─md127p3               259:4    0   30M  0 part   
+  ├─md127p4               259:7    0   40M  0 part   
+  └─md127p5               259:8    0   95M  0 part   
+sde                         8:64   0  250M  0 disk   
+├─sde1                      8:65   0  100M  0 part   
+│ └─md127                   9:127  0  196M  0 raid10 
+│   ├─md127p1             259:0    0   10M  0 part   
+│   ├─md127p2             259:3    0   20M  0 part   
+│   ├─md127p3             259:4    0   30M  0 part   
+│   ├─md127p4             259:7    0   40M  0 part   
+│   └─md127p5             259:8    0   95M  0 part   
+└─sde2                      8:66   0  149M  0 part   
+
+```
+
 ### Vagrantfile, который сразу собирает систему с подключенным рейдом.
 
 [Vagrantfile](Vagrantfile)
@@ -313,6 +356,49 @@ vagrant@nginx:~$ mount | grep raid
 /dev/md127p3 on /raid/part3 type ext4 (rw,relatime,stripe=256)
 /dev/md127p4 on /raid/part4 type ext4 (rw,relatime,stripe=256)
 /dev/md127p5 on /raid/part5 type ext4 (rw,relatime,stripe=256)
+```
+
+```
+vagrant@nginx:~$ lsblk 
+NAME                      MAJ:MIN RM  SIZE RO TYPE   MOUNTPOINTS
+sda                         8:0    0  9.8G  0 disk   
+├─sda1                      8:1    0    1M  0 part   
+├─sda2                      8:2    0  1.8G  0 part   /boot
+└─sda3                      8:3    0    8G  0 part   
+  └─ubuntu--vg-ubuntu--lv 252:0    0    8G  0 lvm    /
+sdb                         8:16   0  100M  0 disk   
+└─md127                     9:127  0  196M  0 raid10 
+  ├─md127p1               259:0    0   10M  0 part   
+  ├─md127p2               259:3    0   20M  0 part   
+  ├─md127p3               259:4    0   30M  0 part   
+  ├─md127p4               259:7    0   40M  0 part   
+  └─md127p5               259:8    0   95M  0 part   
+sdc                         8:32   0  250M  0 disk   
+├─sdc1                      8:33   0  100M  0 part   
+│ └─md127                   9:127  0  196M  0 raid10 
+│   ├─md127p1             259:0    0   10M  0 part   
+│   ├─md127p2             259:3    0   20M  0 part   
+│   ├─md127p3             259:4    0   30M  0 part   
+│   ├─md127p4             259:7    0   40M  0 part   
+│   └─md127p5             259:8    0   95M  0 part   
+└─sdc2                      8:34   0  149M  0 part   
+sdd                         8:48   0  100M  0 disk   
+└─md127                     9:127  0  196M  0 raid10 
+  ├─md127p1               259:0    0   10M  0 part   
+  ├─md127p2               259:3    0   20M  0 part   
+  ├─md127p3               259:4    0   30M  0 part   
+  ├─md127p4               259:7    0   40M  0 part   
+  └─md127p5               259:8    0   95M  0 part   
+sde                         8:64   0  250M  0 disk   
+├─sde1                      8:65   0  100M  0 part   
+│ └─md127                   9:127  0  196M  0 raid10 
+│   ├─md127p1             259:0    0   10M  0 part   
+│   ├─md127p2             259:3    0   20M  0 part   
+│   ├─md127p3             259:4    0   30M  0 part   
+│   ├─md127p4             259:7    0   40M  0 part   
+│   └─md127p5             259:8    0   95M  0 part   
+└─sde2                      8:66   0  149M  0 part   
+
 ```
 
 ## Заметки
