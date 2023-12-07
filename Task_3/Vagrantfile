@@ -1,0 +1,89 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+MACHINES = {
+  :nginx => {
+        :box_name => "constantlux/ubuntu-20.04_kernel-6.6.1",
+        :ip_addr => '192.168.57.150',
+        :disks => {
+          :sata1 => {
+              :dfile => './sata1.vdi',
+              :size => 100,
+              :port => 1
+          },
+          :sata2 => {
+              :dfile => './sata2.vdi',
+              :size => 250, #Не было диска на 100Мбит
+              :port => 2
+          },
+          :sata3 => {
+              :dfile => './sata3.vdi',
+              :size => 100,
+              :port => 3
+          },
+           :sata4 => {
+              :dfile => './sata4.vdi',
+              :size => 250,
+              :port => 4
+          }
+        }
+  }
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+
+      config.vm.define boxname do |box|
+
+          box.vm.box = boxconfig[:box_name]
+          box.vm.host_name = boxname.to_s
+          
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+
+          box.vm.provider :virtualbox do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "2048"]
+            # Begine for Task3
+            needsController = false
+            boxconfig[:disks].each do |dname, dconf|
+              unless File.exist?(dconf[:dfile])
+                vb.customize ['createhd', '--filename', dconf[:dfile], '--variant', 'Fixed', '--size', dconf[:size]]
+                needsController =  true
+              end
+            end
+            if needsController == true
+              vb.customize ["storagectl", :id, "--name", "SATA", "--add", "sata" ]
+              boxconfig[:disks].each do |dname, dconf|
+                vb.customize ['storageattach', :id,  '--storagectl', 'SATA', '--port', dconf[:port], '--device', 0, '--type', 'hdd', '--medium', dconf[:dfile]]
+              end
+            end
+            config.vm.provision "shell", inline: <<-SHELL
+                sudo su
+                sgdisk -o /dev/sdc
+                sgdisk -n 0::+100M /dev/sdc
+                sgdisk -n 0::0 /dev/sdc
+                sgdisk -o /dev/sde
+                sgdisk -n 0::+100M /dev/sde
+                sgdisk -n 0::0 /dev/sde
+                mdadm --create RAID10 -l 10 -n 4 /dev/sdb /dev/sdc1 /dev/sdd /dev/sde1    
+                cd /etc/mdadm/
+                echo "DEVICE partitions" >> mdadm.conf
+                mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' >> mdadm.conf
+                sgdisk -o /dev/md127
+                sgdisk -n 0::+10M /dev/md127
+                sgdisk -n 0::+20M /dev/md127
+                sgdisk -n 0::+30M /dev/md127
+                sgdisk -n 0::+40M /dev/md127
+                sgdisk -n 0::0 /dev/md127
+                for i in $(seq 1 5); do mkfs.ext4 /dev/md127p$i ; mkdir -p /raid/part$i ; mount /dev/md127p$i /raid/part$i; done
+            SHELL
+
+            
+            # end Task3
+          end
+       end
+  end
+end
+ 
+

@@ -1,0 +1,3 @@
+sgdisk -o $1
+sgdisk -n 0::+100M $1
+sgdisk -n 0::0 $1
