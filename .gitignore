@@ -1,2 +1,3 @@
 boxes/*
 *.box
+.vagrant
