@@ -4,7 +4,7 @@
 
 MACHINES = {
   :nginx => {
-        :box_name => "constantlux/ubuntu-20.04_kernel-6.6.1",
+        :box_name => "constantlux/ubuntu-22.04_kernel-6.6.1",
         :ip_addr => '192.168.57.150'
   }
 }

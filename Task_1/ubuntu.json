@@ -2,7 +2,7 @@
     "variables": {
         "u_name": "vagrant",
         "u_pass": "vagrant",
-        "box_name": "ubuntu-20.04_kernel-6.6.1.box",
+        "box_name": "ubuntu-22.04_kernel-6.6.box",
         "box_ver": "0.1.0"
 
     },

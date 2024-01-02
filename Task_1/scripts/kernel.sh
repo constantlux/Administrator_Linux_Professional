@@ -2,8 +2,8 @@
 sudo add-apt-repository ppa:cappelikan/ppa -y
 sudo apt update -y
 sudo apt install mainline -y
-sudo mainline download 6.6.1
-sudo mainline install 6.6.1
+sudo mainline download 6.6
+sudo mainline install 6.6
 sudo apt --fix-broken install -y
 
 #Вариант 2

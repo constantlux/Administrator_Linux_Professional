@@ -6,7 +6,7 @@
 Создан образ для [Ubuntu Server 22.04 LTS](https://releases.ubuntu.com/22.04.3/) 
 ядро обновлено до 6.6.1, начальное ядро не удалял осталось в `/boot/`
 
-Результат размещен в [Vagrant cloud](https://app.vagrantup.com/constantlux/boxes/ubuntu-20.04_kernel-6.6.1)
+Результат размещен в [Vagrant cloud](https://app.vagrantup.com/constantlux/boxes/ubuntu-22.04_kernel-6.6.1)
 
 Образ создается с помощью packer и [Cloud-init](https://cloudinit.readthedocs.io/en/latest/index.html)
 
@@ -14,8 +14,8 @@
 
 
 ```bash
-$ vagrant box add constantlux/ubuntu-20.04_kernel-6.6.1 
-$ vagrant init constantlux/ubuntu-20.04_kernel-6.6.1
+$ vagrant box add constantlux/ubuntu-22.04_kernel-6.6.1 
+$ vagrant init constantlux/ubuntu-22.04_kernel-6.6.1
 $ vagrant ssh
 
 vagrant@ubuntu-otus:~$ uname -a

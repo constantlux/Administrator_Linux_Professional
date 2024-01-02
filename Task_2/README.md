@@ -12,7 +12,7 @@
 Задание выполнялось на Ubuntu Server 22.04 LTS. Использовался vagrant box собранный в [первом задании](https://github.com/constantlux/Administrator_Linux_Professional/tree/main/Task_1)
 
 ```
-vagrant box add constantlux/ubuntu-20.04_kernel-6.6.1 
+vagrant box add constantlux/ubuntu-22.04_kernel-6.6.1 
 ```
 
 В рамках выполнения NGINX устанавливается из репозитория разработчиков, что обеспечивает последнюю стабильную версию
@@ -80,6 +80,8 @@ nginx version: nginx/1.24.0
   ```
 
 Данный момент поправил, но поскольку в vagrant cloud исправление не заливал, то оставил испрвление в playbook. 
+
+upd 12.12.23: обновил в [Vagrant cloud](https://app.vagrantup.com/constantlux/boxes/ubuntu-22.04_kernel-6.6.1/versions/0.1.1)
 
 ### Установка последней стабильной версии
 Поскольку в репозитории ubunut лежит весьма старая версия, выполним подключение репозитория nginx по инструкции с [оф сайта](https://nginx.org/ru/linux_packages.html#Ubuntu)
