@@ -14,11 +14,11 @@ override_dh_auto_configure:
 	tar -xzf $(build_dir).tar.gz -C $(build_dir)/ --strip-components=1
 	rm -f $(build_dir).tar.gz
 	cd $(build_dir) && ./configure --with-http_ssl_module \
-> --conf-path=/etc/nginx/nginx.conf \
-> --error-log-path=/var/log/nginx/error.log \
-> --http-log-path=/var/log/nginx/access.log \
-> --pid-path=/var/run/nginx.pid \
-> --sbin-path=/usr/sbin/nginx 
+					--conf-path=/etc/nginx/nginx.conf \
+					--error-log-path=/var/log/nginx/error.log \
+					--http-log-path=/var/log/nginx/access.log \
+					--pid-path=/var/run/nginx.pid \
+					--sbin-path=/usr/sbin/nginx 
 
 override_dh_usrlocal:
 
