@@ -1,0 +1,14 @@
+Source:                 nginx
+Section:                misc
+Priority:               optional
+Maintainer:             Constantinus <constantlux@gmail.com>
+Build-Depends:          libpcre2-dev,
+                        libssl-dev,
+                        zlib1g-dev
+Standards-Version:      1.24.0
+Homepage:               https://nginx.org
+
+Package:                nginx
+Architecture:           amd64
+Provides:               nginx
+Description: NGINX 1.24.0 with ssl

@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+export DH_VERBOSE = 1
+
+url='https://nginx.org/download/nginx-1.24.0.tar.gz'
+build_dir='nginx'
+
+override_dh_auto_clean:
+	if [ ! -f $(build_dir) ]; then rm -rf $(build_dir); fi
+	mkdir $(build_dir)
+	dh_auto_clean
+
+override_dh_auto_configure:
+	wget $(url) -O $(build_dir).tar.gz
+	tar -xzf $(build_dir).tar.gz -C $(build_dir)/ --strip-components=1
+	rm -f $(build_dir).tar.gz
+	cd $(build_dir) && ./configure --with-http_ssl_module \
+> --conf-path=/etc/nginx/nginx.conf \
+> --error-log-path=/var/log/nginx/error.log \
+> --http-log-path=/var/log/nginx/access.log \
+> --pid-path=/var/run/nginx.pid \
+> --sbin-path=/usr/sbin/nginx 
+
+override_dh_usrlocal:
+
+%:
+	dh $@ --sourcedirectory=$(build_dir)/
