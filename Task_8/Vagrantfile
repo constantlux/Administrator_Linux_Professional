@@ -4,14 +4,8 @@ MACHINES = {
     :nginx => {
         :box_name => "constantlux/ubuntu-22.04",
         :ip_addr => '192.168.57.150',
-        :script => 'scripts/repo.sh'
   },
-  :cust => {
-    :box_name => "constantlux/ubuntu-22.04",
-    :ip_addr => '192.168.57.151',
-    :script => 'scripts/cust.sh'
-},    
-
+ 
 }
 Vagrant.configure("2") do |config|
     MACHINES.each do |boxname, boxconfig|
@@ -24,8 +18,6 @@ Vagrant.configure("2") do |config|
             box.vm.provider :virtualbox do |vb|
                 vb.customize ["modifyvm", :id, "--memory", "2048"]
             end
-            box.vm.provision "file", source: "nginx_1.24.0_amd64.deb", destination: "/home/vagrant/nginx_1.24.0_amd64.deb"
-            box.vm.provision "shell",path: boxconfig[:script]
         end
     end
 end
