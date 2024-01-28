@@ -1,0 +1,10 @@
+[Unit]
+Description=Run showlog script every 30 second
+
+[Timer]
+# Run every 30 second
+OnUnitActiveSec=30
+Unit=showlog.service
+
+[Install]
+WantedBy=multi-user.target

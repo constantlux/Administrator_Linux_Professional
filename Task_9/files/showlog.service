@@ -1,0 +1,7 @@
+[Unit]
+Description=My showlog service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/default/showlog.conf
+ExecStart=/opt/showlog.sh $WORD $LOG
