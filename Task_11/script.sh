@@ -32,7 +32,6 @@ do
 		ss="0$ss"
 	fi	
 	time="$mm:$ss"
-	#echo "$PID|$tty|$pid_stat|$time|$cmd"
 	RESULT_DISPLAY="$RESULT_DISPLAY$PID\t$tty\t$pid_stat\t$time\t$cmd\n"
 done
 echo -e "$RESULT_DISPLAY"
