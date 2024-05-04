@@ -1,0 +1,130 @@
+---
+- name: NGINX-install
+  hosts: web
+  become: True
+  vars:
+    nginx_listen_port: 80
+    log_srv: 192.168.57.151:514
+
+  tasks:
+  - name: NGINX-save_key_nginx_repo
+    shell: curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+    tags:
+      - add_nginx_repo
+
+  - name: NGINX-add_nginx_stable_repo
+    shell: echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+    tags:
+      - add_nginx_repo
+
+  - name: NGINX-fixed_apt_preferences
+    shell: 'echo "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n"  | sudo tee /etc/apt/preferences.d/99nginx'
+    tags:
+      - add_nginx_repo
+
+
+  - name: NGINX-install_nginx
+    apt:
+      update_cache: True
+      name: nginx
+    tags:
+      - nginx-package
+    notify:
+      - start_nginx
+
+  - name: NGINX-rsyslog_config
+    template:
+      src: templates/rsyslog.conf.j2
+      dest: /etc/rsyslog.d/10-audit.conf
+
+
+  - name: NGINX-install_audits
+    apt:
+      update_cache: True
+      name: 
+        - auditd
+        - rsyslog
+    tags:
+      - auditd-package
+    notify: add_auditd_rule
+
+
+
+  - name: NGINX-config
+    template:
+      src: templates/nginx.conf.j2
+      dest: /etc/nginx/nginx.conf
+    tags:
+      - nginx-configuration
+    notify:
+      - reload_nginx
+  
+  handlers:
+    - name: start_nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: True
+
+    - name: restart_nginx
+      systemd:
+        name: nginx
+        state: restarted
+        
+    - name: reload_nginx
+      systemd:
+        name: nginx
+        state: reloaded
+
+    - name: add_auditd_rule
+      shell: auditctl -w /etc/nginx/ -p aw -k NGINX_CONF_AUDIT
+
+
+- name: LOG_Collector
+  hosts: log
+  become: True
+
+  tasks:
+  - name: Update repo cache and install rsyslog
+    apt:
+      update_cache: True
+      name: rsyslog
+
+  - name: open_socket
+    shell: 'echo "module(load=\"imudp\")\ninput(type=\"imudp\" port=\"514\")\nmodule(load=\"imtcp\")\ninput(type=\"imtcp\" port=\"514\")" >> /etc/rsyslog.conf'
+    tags:
+      - open_default_socket
+  
+  - name: add_rule_remote_log
+    shell: 'echo "\$template RemoteLogs, \"/var/log/rsyslog/%HOSTNAME%/%PROGRAMNAME%.log\"\n*.* ?RemoteLogs\n& ~" >> /etc/rsyslog.conf'
+    tags:
+      - rule_remote_log
+  - name: restart_rsyslog
+    systemd:
+        name: rsyslog
+        state: restarted
+
+# - name: LOG_Hub
+#   hosts: log_hub
+#   become: True
+
+#   tasks:
+#   - name: Update repo cache and install rsyslog
+#     apt:
+#       update_cache: True
+#       name: rsyslog
+
+  # - name: open_socket
+  #   shell: 'echo "module(load=\"imudp\")\ninput(type=\"imudp\" port=\"514\")\nmodule(load=\"imtcp\")\ninput(type=\"imtcp\" port=\"514\")" >> /etc/rsyslog.conf'
+  #   tags:
+  #     - open_default_socket
+  
+  # - name: add_rule_remote_log
+  #   shell: 'echo "\$template RemoteLogs, \"/var/log/rsyslog/%HOSTNAME%/%PROGRAMNAME%.log\"\n*.* ?RemoteLogs\n& ~" >> /etc/rsyslog.conf'
+  #   tags:
+  #     - rule_remote_log
+  # - name: restart_rsyslog
+  #   systemd:
+  #       name: rsyslog
+  #       state: restarted
+    
